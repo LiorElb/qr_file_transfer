@@ -21,8 +21,14 @@ class Receiver:
 
         cv2.namedWindow('ACK')  # Open a window in which the ACK QRs will show
 
+    # This is the "main" function of the class
+    def read_transmission(self):
+        filename = self._get_filename()
+        with open(filename, 'ab+') as f:
+            self._read_qr_contents_to_file(f)
+
     # Detect and decode the qrcode
-    def detect_qr_and_decode(self, frame: numpy.ndarray):
+    def _detect_qr_and_decode(self, frame: numpy.ndarray):
         data, _, _ = self.qr_decoder.detectAndDecode(frame)
 
         if len(data) == 0:  # This means no QR was spotted
@@ -32,18 +38,18 @@ class Receiver:
         content = data[1:]
 
         if data[1:] == '!':  # If we encountered the end of transmission QR
-            self.show_ack(index)
+            self._show_ack(index)
             time.sleep(10)
             sys.exit(0)
 
         return index, base64.b64decode(content)
 
     @staticmethod
-    def show_ack(index: int):
+    def _show_ack(index: int):
         img = generate_qr_image(str(index).encode())
         cv2.imshow(f'ACK', img)
 
-    def get_filename(self):
+    def _get_filename(self):
         original_filename = self._read_filename_qr()
 
         # This part just makes sure we are writing to a new file,
@@ -59,7 +65,7 @@ class Receiver:
     def _read_filename_qr(self):
         frame = self._read_next_frame()
         while True:
-            index, filename = self.detect_qr_and_decode(frame)
+            index, filename = self._detect_qr_and_decode(frame)
             if filename is not None:
                 break
             frame = self._read_next_frame()
@@ -71,12 +77,12 @@ class Receiver:
             raise IOError("Unable to get input from camera (was camera was shut off during transmission?)")
         return frame
 
-    def read_qr_contents_to_file(self, f: IO):
+    def _read_qr_contents_to_file(self, f: IO):
         expected_index = 1  # First qr we get should be indexed 1
         frame = self._read_next_frame()
         while True:
             self._before_read_actions(frame)
-            index, data = self.detect_qr_and_decode(frame)
+            index, data = self._detect_qr_and_decode(frame)
             if data is not None:
                 # Handle received data
                 if index == expected_index:
@@ -84,7 +90,7 @@ class Receiver:
 
                     # When we get the data we wanted, we now expect the next index.
                     expected_index = (expected_index + 1) % 10
-                self.show_ack(index)  # Regardless, we show ACK for the current received packet
+                self._show_ack(index)  # Regardless, we show ACK for the current received packet
 
             # Get the next frame
             frame = self._read_next_frame()
@@ -118,9 +124,7 @@ def main():
     r = DebugReceiver(qr_detector=cv2.QRCodeDetector(),
                       video_capture=cv2.VideoCapture(CAMERA_DEVICE_NUM))
 
-    filename = r.get_filename()
-    with open(filename, 'ab+') as f:
-        r.read_qr_contents_to_file(f)
+    r.read_transmission()
 
 
 if __name__ == '__main__':

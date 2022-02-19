@@ -27,10 +27,8 @@ def test_receiver(setup):
 
     r = Receiver(qr_detector=cv2.QRCodeDetector(), video_capture=mock_video_capture)
 
-    filename = r.get_filename()
-    with open(filename, 'ab+') as f:
-        with pytest.raises(SystemExit) as ex:
-            r.read_qr_contents_to_file(f)
+    with pytest.raises(SystemExit) as ex:
+        r.read_transmission()
 
     assert ex.value.code == 0  # Assert receiver existed with status code 0
     assert os.path.exists("test_file.txt")

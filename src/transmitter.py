@@ -10,6 +10,24 @@ vc = cv2.VideoCapture(0)  # A video capturing object, which reads from computer'
 cv2.namedWindow("Transceiver", cv2.WINDOW_FULLSCREEN)  # A windows for the QR code to be displayed on
 
 
+# This is the "main" function
+def transmit(file_path: Path):
+    # First we transmit the file chunk by chunk
+    for i, img in qr_chunks_generator(file_path):
+        cv2.imshow("Transceiver", img)
+        while True:
+            # waitKey is required or cv.imshow wont work.
+            # if the '+' key is pressed, next QR will show (for debugging purposes)
+            if cv2.waitKey(1) & 0xFF == ord('+'):
+                break
+            # If our message was ACKed, we can move on to the next one
+            if is_ack(i):
+                break
+
+    # Cleanup steps
+    cv2.destroyAllWindows()
+
+
 # This generator gives out all the QRs we need to transmit in order to transfer the file
 def qr_chunks_generator(file_path: Path):
     # Initial QR - the filename
@@ -44,24 +62,6 @@ def is_ack(index):
         if int(data) == index:
             return True
     return False
-
-
-# This is the main function
-def transmit(file_path: Path):
-    # First we transmit the file chunk by chunk
-    for i, img in qr_chunks_generator(file_path):
-        cv2.imshow("Transceiver", img)
-        while True:
-            # waitKey is required or cv.imshow wont work.
-            # if the '+' key is pressed, next QR will show (for debugging purposes)
-            if cv2.waitKey(1) & 0xFF == ord('+'):
-                break
-            # If our message was ACKed, we can move on to the next one
-            if is_ack(i):
-                break
-
-    # Cleanup steps
-    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':

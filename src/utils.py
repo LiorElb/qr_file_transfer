@@ -3,7 +3,8 @@ import qrcode
 
 
 def generate_qr_image(qr_data: bytes):
-    # This function gets binary data and outputs a numpy array that represents the QR code with that binary data
+    # This function gets binary data as input
+    # and outputs a numpy array that represents the QR code with that binary data
 
     qr = qrcode.QRCode(
         version=1,

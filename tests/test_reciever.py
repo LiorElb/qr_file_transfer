@@ -9,7 +9,7 @@ from src.receiver import Receiver
 
 
 @pytest.fixture()
-def test_setup(request):
+def setup(request):
     filename = request.param
     if os.path.exists(filename):
         os.remove(filename)
@@ -19,8 +19,8 @@ def test_setup(request):
         os.remove(filename)
 
 
-@pytest.mark.parametrize("test_setup", ["test_file.txt"], indirect=True)
-def test_receiver(test_setup):
+@pytest.mark.parametrize("setup", ["test_file.txt"], indirect=True)
+def test_receiver(setup):
     # This is a feature of cv2.VideoCapture - it mocks the input stream from a set of photos
     # Documentation - https://docs.opencv.org/3.4/d8/dfe/classcv_1_1VideoCapture.html
     mock_video_capture = cv2.VideoCapture("artifacts/test_file/test_img_%02d.jpg")

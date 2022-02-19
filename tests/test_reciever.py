@@ -21,7 +21,9 @@ def test_setup(request):
 
 @pytest.mark.parametrize("test_setup", ["test_file.txt"], indirect=True)
 def test_receiver(test_setup):
+    # This is a feature of cv2.VideoCapture - it mocks the input stream from a set of photos
     mock_video_capture = cv2.VideoCapture("artifacts/test_file/test_img_%02d.jpg")
+
     r = Receiver(qr_detector=cv2.QRCodeDetector(), video_capture=mock_video_capture)
 
     filename = r.get_filename()

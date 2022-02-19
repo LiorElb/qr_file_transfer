@@ -96,6 +96,9 @@ class Receiver:
     def _before_read_actions(self, frame):
         pass  # the main receiver doesn't do anything before reading the next QR
 
+    def __del__(self):
+        cv2.destroyAllWindows()
+
 
 class DebugReceiver(Receiver):
     def __init__(self, qr_detector: cv2.QRCodeDetector, video_capture: cv2.VideoCapture):

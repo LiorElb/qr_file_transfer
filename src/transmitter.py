@@ -4,7 +4,7 @@ from pathlib import Path
 
 import cv2
 
-from utils import generate_qr_image
+from src.utils import generate_qr_image
 
 vc = cv2.VideoCapture(0)  # A video capturing object, which reads from computer's camera
 cv2.namedWindow("Transceiver", cv2.WINDOW_FULLSCREEN)  # A windows for the QR code to be displayed on

@@ -11,9 +11,16 @@ from receiver import Receiver
 @pytest.fixture()
 def no_sleep():
     """
-    We make time.sleep() do nothing because receiver pauses before existing
+    We make cv2.waitKey() do nothing in the end delay because receiver pauses before existing
     """
-    with patch('time.sleep'):
+    waitkey = cv2.waitKey
+
+    def new_waitKey(delay):
+        if delay != 1:
+            return -1
+        return waitkey(delay)
+
+    with patch('cv2.waitKey', new_waitKey):
         yield
 
 

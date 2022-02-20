@@ -1,7 +1,6 @@
 import base64
 import os
 import sys
-import time
 from typing import IO
 
 import cv2
@@ -43,7 +42,7 @@ class Receiver:
 
         if data[1:] == '!':  # If we encountered the end of transmission QR
             self._show_ack(index)
-            time.sleep(10)
+            cv2.waitKey(10000)  # Show the final ack for 10 seconds, then exit
             sys.exit(0)
 
         return index, base64.b64decode(content)
@@ -114,6 +113,7 @@ class DebugReceiver(Receiver):
     """
     Just like the normal Receiver, but shows the video stream from the camera on the screen
     """
+
     def __init__(self, qr_detector: cv2.QRCodeDetector, video_capture: cv2.VideoCapture):
         super().__init__(qr_detector, video_capture)
         cv2.namedWindow("preview")  # Video stream from camera
@@ -128,8 +128,8 @@ CAMERA_DEVICE_NUM = 0
 
 
 def main():
-    r = DebugReceiver(qr_detector=cv2.QRCodeDetector(),
-                      video_capture=cv2.VideoCapture(CAMERA_DEVICE_NUM))
+    r = Receiver(qr_detector=cv2.QRCodeDetector(),
+                 video_capture=cv2.VideoCapture(CAMERA_DEVICE_NUM))
 
     r.read_transmission()
 

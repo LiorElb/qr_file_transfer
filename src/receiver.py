@@ -11,6 +11,10 @@ from src.utils import generate_qr_image
 
 
 class Receiver:
+    """
+    A class that encapsulates all the methods needed in order to capture the QR codes from the camera input
+    and write the file
+    """
     qr_decoder: cv2.QRCodeDetector
     video_capture: cv2.VideoCapture
 
@@ -23,7 +27,7 @@ class Receiver:
 
     # This is the "main" function of the class
     def read_transmission(self):
-        filename = self._get_filename()
+        filename = self._read_filename()
         with open(filename, 'ab+') as f:
             self._read_qr_contents_to_file(f)
 
@@ -49,7 +53,7 @@ class Receiver:
         img = generate_qr_image(str(index).encode())
         cv2.imshow(f'ACK', img)
 
-    def _get_filename(self):
+    def _read_filename(self):
         original_filename = self._read_filename_qr()
 
         # This part just makes sure we are writing to a new file,
@@ -57,7 +61,7 @@ class Receiver:
         j = 1
         filename = original_filename
         while os.path.exists(filename):
-            filename = original_filename + f'({j})'
+            filename = f'{original_filename} ({j})'
             j += 1
         return filename
 
@@ -96,7 +100,7 @@ class Receiver:
             frame = self._read_next_frame()
 
             # This code waits until the frame arrives
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            if cv2.waitKey(1) & 0xFF == ord('+'):
                 break
 
     def _before_read_actions(self, frame):
@@ -107,6 +111,9 @@ class Receiver:
 
 
 class DebugReceiver(Receiver):
+    """
+    Just like the normal Receiver, but shows the video stream from the camera on the screen
+    """
     def __init__(self, qr_detector: cv2.QRCodeDetector, video_capture: cv2.VideoCapture):
         super().__init__(qr_detector, video_capture)
         cv2.namedWindow("preview")  # Video stream from camera

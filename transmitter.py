@@ -4,7 +4,7 @@ from pathlib import Path
 
 import cv2
 
-from src.utils import generate_qr_image
+from utils import generate_qr_image
 
 
 class Transmitter:

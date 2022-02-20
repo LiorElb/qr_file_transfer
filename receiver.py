@@ -7,7 +7,7 @@ from typing import IO
 import cv2
 import numpy
 
-from src.utils import generate_qr_image
+from utils import generate_qr_image
 
 
 class Receiver:

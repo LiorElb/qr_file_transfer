@@ -6,7 +6,7 @@ from unittest.mock import patch
 import cv2
 import pytest
 
-from src.receiver import Receiver
+from receiver import Receiver
 
 
 @pytest.fixture()
